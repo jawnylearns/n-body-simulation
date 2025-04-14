@@ -1,38 +1,46 @@
 import numpy as np
-from constants import G
 
-def compute_gravitational_force(body1, body2):
-    '''
-    Compute the gravitational force exerted on body 1 by body 2.
-    '''
-    delta = body2.position - body1.position  # vector from body1 to body2
-    distance = np.linalg.norm(delta)
-
-    if distance == 0:
-        return np.zeros(2)  # avoid division by zero
-
-    force_magnitude = G * body1.mass * body2.mass / distance ** 2
-    force_direction = delta / distance  # unit vector
-
-    return force_magnitude * force_direction
-
-def update_bodies(bodies, dt):
+def getAcc(pos, mass, G, softening):
     """
-    Update positions, velocities, and calculate forces for all bodies.
+    Calculate the acceleration on each particle due to Newton's Law 
+    pos  is an N x 3 matrix of positions
+    mass is an N x 1 vector of masses
+    G is Newton's Gravitational constant
+    softening is the softening length
+    a is N x 3 matrix of accelerations
     """
-    # Reset forces
-    for body in bodies:
-        body.force = np.zeros(2)
+    x = pos[:,0:1]
+    y = pos[:,1:2]
+    z = pos[:,2:3]
+    dx = x.T - x
+    dy = y.T - y
+    dz = z.T - z
+    inv_r3 = (dx**2 + dy**2 + dz**2 + softening**2)
+    inv_r3[inv_r3>0] = inv_r3[inv_r3>0]**(-1.5)
+    ax = G * (dx * inv_r3) @ mass
+    ay = G * (dy * inv_r3) @ mass
+    az = G * (dz * inv_r3) @ mass
+    a = np.hstack((ax,ay,az))
+    return a
 
-    # Calculate net forces on each body
-    for i, body1 in enumerate(bodies):
-        for j, body2 in enumerate(bodies):
-            if i != j:
-                body1.force += compute_gravitational_force(body1, body2)
-
-    # Update velocities and positions using Euler integration
-    for body in bodies:
-        acceleration = body.force / body.mass
-        body.velocity += acceleration * dt
-        body.position += body.velocity * dt
-        body.update_trajectory()  # Track the body’s trajectory
+def getEnergy(pos, vel, mass, G):
+    """
+    Get kinetic energy (KE) and potential energy (PE) of simulation
+    pos is N x 3 matrix of positions
+    vel is N x 3 matrix of velocities
+    mass is an N x 1 vector of masses
+    G is Newton's Gravitational constant
+    KE is the kinetic energy of the system
+    PE is the potential energy of the system
+    """
+    KE = 0.5 * np.sum(np.sum(mass * vel**2))
+    x = pos[:,0:1]
+    y = pos[:,1:2]
+    z = pos[:,2:3]
+    dx = x.T - x
+    dy = y.T - y
+    dz = z.T - z
+    inv_r = np.sqrt(dx**2 + dy**2 + dz**2)
+    inv_r[inv_r>0] = 1.0 / inv_r[inv_r>0]
+    PE = G * np.sum(np.sum(np.triu(-(mass*mass.T)*inv_r, 1)))
+    return KE, PE
