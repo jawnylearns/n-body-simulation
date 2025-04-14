@@ -16,5 +16,8 @@ The simulation demonstrates how these gravitational interactions influence the m
 
 This simulation is a powerful visual and computational representation of gravitational dynamics, suitable for educational purposes or simply as a mesmerizing physics visualization.
 
+python main.py
+![image](https://github.com/user-attachments/assets/40c9d2bf-3dad-470a-829e-3e8a9193fcad)
+
 
 
