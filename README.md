@@ -1,5 +1,6 @@
 # A controlled n-body simulation.
-## <ins>Created using the inspiration and help from [this repository](https://github.com/pmocz/nbody-python/tree/master).</ins>
+## Created as a learning experience in both familiarizing myself with computational physics through a project, and to also famiarize myself with different topics inside the realm of physics.
+Thanks to [this repository](https://github.com/pmocz/nbody-python/tree/master) for helping with the foundation for the physics that is behind this project. Some additional features that I have added for quality of life are below. Keep on learning.
 
 This project simulates a 2D N-body gravitational system using Newtonian physics. Each body represents a massive object (like a star or planet), and all bodies interact with one another through gravity. 
 The simulation demonstrates how these gravitational interactions influence the motion of the bodies over time. *This is an extremely controlled simulation.*
